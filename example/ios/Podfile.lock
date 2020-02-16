@@ -1,0 +1,29 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_rtmp_plugin (0.0.1):
+    - Flutter
+    - LFLiveKit
+  - LFLiveKit (2.6)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_rtmp_plugin (from `.symlinks/plugins/flutter_rtmp_plugin/ios`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - LFLiveKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_rtmp_plugin:
+    :path: ".symlinks/plugins/flutter_rtmp_plugin/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_rtmp_plugin: a61ff8945c26a76caeca71bac9ca1bdd7ea7c8f9
+  LFLiveKit: 2219563721f8aa0f188effc3395a06e2d53b23f2
+
+PODFILE CHECKSUM: 3dbe063e9c90a5d7c9e4e76e70a821b9e2c1d271
+
+COCOAPODS: 1.6.2
