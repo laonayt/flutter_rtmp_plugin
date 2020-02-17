@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
         body: RaisedButton(
           child: Text("开始直播"),
           onPressed: () {
-            var url = "rtmp://192.168.1.1/rtmp/";
+            var url = "rtmp://192.168.31.20/rtmplive/test";
             FlutterRtmpPlugin.startLive(url);
           },
         ),

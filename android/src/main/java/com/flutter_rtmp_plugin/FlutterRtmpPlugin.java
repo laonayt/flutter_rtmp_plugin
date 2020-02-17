@@ -46,20 +46,13 @@ public class FlutterRtmpPlugin implements FlutterPlugin, MethodCallHandler {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
 
     } else if (call.method.equals("startLive")) {
-      if (context != null){
-        System.out.println("===>Fuck!");
-      }
-      if (context == null){
-        System.out.println("===>Gou ri de !");
-      }
       Intent intent = new Intent(context,LivingActivity.class);
       String url = call.argument("url");
       intent.putExtra("url",url);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
       context.startActivity(intent);
 
-    }
-    else {
+    } else {
       result.notImplemented();
     }
   }
