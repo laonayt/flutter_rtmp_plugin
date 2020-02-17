@@ -98,8 +98,8 @@ public class LivingActivity extends Activity {
         String url = getIntent().getStringExtra("url");
         mRtmpSender = new RtmpSender();
         mRtmpSender.setAddress(url);
-//        mRtmpSender.setVideoParams(360, 640);
-//        mRtmpSender.setAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
+        mRtmpSender.setVideoParams(360, 640);
+        mRtmpSender.setAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
         mRtmpSender.setSenderListener(mSenderListener);
         mLFLiveView.setSender(mRtmpSender);
 
