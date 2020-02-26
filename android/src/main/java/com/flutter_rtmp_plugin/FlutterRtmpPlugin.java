@@ -42,10 +42,7 @@ public class FlutterRtmpPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-
-    } else if (call.method.equals("startLive")) {
+    if(call.method.equals("startLive")){
       Intent intent = new Intent(context,LivingActivity.class);
       String url = call.argument("url");
       intent.putExtra("url",url);
@@ -59,5 +56,6 @@ public class FlutterRtmpPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+
   }
 }
