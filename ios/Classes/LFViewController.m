@@ -113,11 +113,7 @@ typedef enum {
 
 - (LFLiveSession *)session {
     if (!_session) {
-        LFLiveVideoConfiguration *videoConfig;
-        videoConfig = [LFLiveVideoConfiguration defaultConfigurationForQuality:LFLiveVideoQuality_Medium1];
-        videoConfig.outputImageOrientation = UIInterfaceOrientationPortrait;
-        
-        _session = [[LFLiveSession alloc] initWithAudioConfiguration: [LFLiveAudioConfiguration defaultConfiguration] videoConfiguration: videoConfig captureType:LFLiveCaptureMaskVideo];
+        _session = [[LFLiveSession alloc] initWithAudioConfiguration:[LFLiveAudioConfiguration defaultConfiguration] videoConfiguration:[LFLiveVideoConfiguration defaultConfiguration]];
         
         if (self.cameraType == back_Camera) {
             _session.captureDevicePosition = AVCaptureDevicePositionBack;

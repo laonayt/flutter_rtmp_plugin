@@ -15,6 +15,8 @@ import com.laifeng.sopcastsdk.stream.packer.rtmp.RtmpPacker;
 import com.laifeng.sopcastsdk.stream.sender.rtmp.RtmpSender;
 import com.laifeng.sopcastsdk.ui.CameraLivingView;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class LivingActivity extends Activity {
     private CameraLivingView mLFLiveView;
     private RtmpSender mRtmpSender;
@@ -199,5 +201,13 @@ public class LivingActivity extends Activity {
         super.onDestroy();
         mLFLiveView.stop();
         mLFLiveView.release();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }
