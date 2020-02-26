@@ -37,4 +37,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:+'
     //LFLive
     implementation 'com.laifeng:sopcast-sdk:1.0.4'
+    //动态权限
+    implementation 'pub.devrel:easypermissions:2.0.1'
 }
