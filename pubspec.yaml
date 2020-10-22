@@ -1,7 +1,6 @@
 name: flutter_rtmp_plugin
 description: A new Flutter plugin.
 version: 0.0.1
-author: laonayt@163.com
 homepage: https://github.com/laonayt/flutter_rtmp_plugin
 
 environment:

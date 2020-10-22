@@ -27,9 +27,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else if ([call.method isEqualToString:@"startLive"]) {
+  if ([call.method isEqualToString:@"startLive"]) {
       NSDictionary * dict = call.arguments;
       NSLog(@"流地址是 %@",dict[@"url"]);
 
@@ -37,7 +35,6 @@
       liveVC.liveUrl = dict[@"url"];
       liveVC.modalPresentationStyle = UIModalPresentationFullScreen;
       [self.viewController presentViewController:liveVC animated:YES completion:nil];
-      
   }
   else {
     result(FlutterMethodNotImplemented);
