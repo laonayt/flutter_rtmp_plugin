@@ -1,21 +1,21 @@
-##前言：
+## 前言：
 Flutter的插件分为两种：Package和Plugin。
 Package是纯Dart的，主要用在组件展示。类似：日历、下拉刷新等。
 Plugin是通过Flutter的channel调用原生，原生来实现功能；主要用在功能性上。类似：拍照、录音等。
 rtmp推流为功能型的，所以此文讲的推流插件是Plugin类型。
 
-##环境：
+## 环境：
 Mac、AS、Xcode、Flutter1.12
 ##项目地址：[flutter_rtmp_plugin](https://github.com/laonayt/flutter_rtmp_plugin)
 
-##1、创建Plugin工程
+## 1、创建Plugin工程
 1、AS中new flutter project 选择plugin选项，按提示语一路next，此处不再赘述。
 ![1.png](https://upload-images.jianshu.io/upload_images/2166188-85f2a06d993a64c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 2、创建完毕，打开工程目录如下，主要修改lib、ios、android三个目录。
 ![2.png](https://upload-images.jianshu.io/upload_images/2166188-f700a11da9d6e5b1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-##2、Flutter端代码书写
+## 2、Flutter端代码书写
 ```
 class FlutterRtmpPlugin {
 //1、创建channel
@@ -32,7 +32,7 @@ class FlutterRtmpPlugin {
 var url = "rtmp://192.168.101.240/rtmplive/test";
 FlutterRtmpPlugin.startLive(url);
 
-##3、 iOS端代码书写
+## 3、 iOS端代码书写
 1、ios目录如下
 ![image.png](https://upload-images.jianshu.io/upload_images/2166188-eab344758ffa703e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -87,7 +87,7 @@ s.dependency 'LFLiveKit'
 ```
 LFViewController就是纯ios代码了。你可以在Assets文件夹下添加资源文件、也可以使用xib搭建UI。
 
-##4、 Android端代码书写
+## 4、 Android端代码书写
 1、android目录如下
 ![5.png](https://upload-images.jianshu.io/upload_images/2166188-fb53f79d514aae3f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 2、android端的推流使用的是[SopCastComponent](https://github.com/LaiFeng-Android/SopCastComponent)
