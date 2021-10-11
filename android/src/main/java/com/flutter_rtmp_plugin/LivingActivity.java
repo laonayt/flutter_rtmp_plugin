@@ -1,6 +1,8 @@
 package com.flutter_rtmp_plugin;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -8,22 +10,27 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.laifeng.sopcastsdk.configuration.AudioConfiguration;
-import com.laifeng.sopcastsdk.configuration.CameraConfiguration;
-import com.laifeng.sopcastsdk.configuration.VideoConfiguration;
-import com.laifeng.sopcastsdk.stream.packer.rtmp.RtmpPacker;
-import com.laifeng.sopcastsdk.stream.sender.rtmp.RtmpSender;
-import com.laifeng.sopcastsdk.ui.CameraLivingView;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class LivingActivity extends Activity {
-    private CameraLivingView mLFLiveView;
-    private RtmpSender mRtmpSender;
+import java.util.LinkedList;
+
+import me.lake.librestreaming.core.listener.RESConnectionListener;
+import me.lake.librestreaming.filter.hardvideofilter.BaseHardVideoFilter;
+import me.lake.librestreaming.filter.hardvideofilter.HardVideoGroupFilter;
+import me.lake.librestreaming.ws.StreamAVOption;
+import me.lake.librestreaming.ws.StreamLiveCameraView;
+import me.lake.librestreaming.ws.filter.hardfilter.GPUImageBeautyFilter;
+import me.lake.librestreaming.ws.filter.hardfilter.WatermarkFilter;
+import me.lake.librestreaming.ws.filter.hardfilter.extra.GPUImageCompatibleFilter;
+
+public class LivingActivity extends AppCompatActivity {
+    private StreamLiveCameraView mLiveCameraView;
+    private StreamAVOption streamAVOption;
     private ImageButton closeBtn;
     private ImageButton mRecordBtn;
     private ImageButton switchBtn;
     private TextView statusView;
     private boolean isRecording;
-    private VideoConfiguration mVideoConfiguration;
     private int mCurrentBps;
 
     @Override
@@ -33,11 +40,11 @@ public class LivingActivity extends Activity {
         setContentView(R.layout.activity_living);
 
         initViews();
-        initLiveView();
+        initLiveConfig();
     }
 
     private void initViews() {
-        mLFLiveView = (CameraLivingView) findViewById(R.id.liveView);
+        mLiveCameraView = (StreamLiveCameraView) findViewById(R.id.liveView);
         closeBtn = (ImageButton) findViewById(R.id.closeBtn);
         mRecordBtn = (ImageButton) findViewById(R.id.btnRecord);
         statusView = (TextView) findViewById(R.id.statusView);
@@ -46,15 +53,16 @@ public class LivingActivity extends Activity {
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLFLiveView.stop();
-                mLFLiveView.release();
+                if(mLiveCameraView.isStreaming()){
+                    mLiveCameraView.stopStreaming();
+                }
                 finish();
             }
         });
         switchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLFLiveView.switchCamera();
+                mLiveCameraView.swapCamera();
             }
         });
         mRecordBtn.setOnClickListener(new View.OnClickListener() {
@@ -62,143 +70,64 @@ public class LivingActivity extends Activity {
             public void onClick(View v) {
                 isRecording = !isRecording;
                 if(isRecording) {
-                    mRtmpSender.connect();
                     mRecordBtn.setBackgroundResource(R.mipmap.pause_live);
-                    mLFLiveView.start();
+
+                    if(!mLiveCameraView.isStreaming()){
+                        String url = getIntent().getStringExtra("url");
+                        mLiveCameraView.startStreaming(url);
+                    }
                 } else {
-                    statusView.setText("未连接");
                     mRecordBtn.setBackgroundResource(R.mipmap.start_live);
-                    mLFLiveView.stop();
+
+                    if(mLiveCameraView.isStreaming()){
+                        mLiveCameraView.stopStreaming();
+                    }
                 }
             }
         });
     }
 
-    private void initLiveView() {
-        mLFLiveView.init();
-
-        //摄像头
-        CameraConfiguration.Builder cameraBuilder = new CameraConfiguration.Builder();
-        cameraBuilder.setOrientation(CameraConfiguration.Orientation.PORTRAIT).setFacing(CameraConfiguration.Facing.FRONT);
-        CameraConfiguration cameraConfiguration = cameraBuilder.build();
-        mLFLiveView.setCameraConfiguration(cameraConfiguration);
-
-        //视频质量
-        VideoConfiguration.Builder videoBuilder = new VideoConfiguration.Builder();
-        videoBuilder.setSize(360, 640);
-        mVideoConfiguration = videoBuilder.build();
-        mLFLiveView.setVideoConfiguration(mVideoConfiguration);
-
-        //初始化打包器
-        RtmpPacker packer = new RtmpPacker();
-        packer.initAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
-        mLFLiveView.setPacker(packer);
-
-        //设置发送器
+    /**
+     * 设置推流参数
+     */
+    public void initLiveConfig() {
         String url = getIntent().getStringExtra("url");
-        mRtmpSender = new RtmpSender();
-        mRtmpSender.setAddress(url);
-        mRtmpSender.setVideoParams(360, 640);
-        mRtmpSender.setAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
-        mRtmpSender.setSenderListener(mSenderListener);
-        mLFLiveView.setSender(mRtmpSender);
+        streamAVOption = new StreamAVOption();
+        streamAVOption.streamUrl = url;
 
-        mLFLiveView.setLivingStartListener(new CameraLivingView.LivingStartListener() {
-            @Override
-            public void startError(int error) {
-                //直播失败
-//                Toast.makeText(LivingActivity.this, "开启失败", Toast.LENGTH_SHORT).show();
-                mLFLiveView.stop();
-            }
-
-            @Override
-            public void startSuccess() {
-                //直播成功
-//                Toast.makeText(LivingActivity.this, "开启成功", Toast.LENGTH_SHORT).show();
-            }
-        });
+        mLiveCameraView.init(this, streamAVOption);
+        mLiveCameraView.addStreamStateListener(resConnectionListener);
     }
 
-    private RtmpSender.OnSenderListener mSenderListener = new RtmpSender.OnSenderListener() {
+    RESConnectionListener resConnectionListener = new RESConnectionListener() {
         @Override
-        public void onConnecting() {
-            statusView.setText("连接中...");
+        public void onOpenConnectionResult(int result) {
+            //result 0成功  1 失败
+            if (result == 0) {
+                statusView.setText("已连接");
+            }
         }
 
         @Override
-        public void onConnected() {
-            statusView.setText("已连接");
-//            mLFLiveView.start();
-            mCurrentBps = mVideoConfiguration.maxBps;
-        }
-
-        @Override
-        public void onDisConnected() {
-            statusView.setText("未连接");
-            mRecordBtn.setBackgroundResource(R.mipmap.start_live);
-            mLFLiveView.stop();
-            isRecording = false;
-        }
-
-        @Override
-        public void onPublishFail() {
-            statusView.setText("推流失败");
+        public void onWriteError(int errno) {
+            statusView.setText("推流失败，请尝试重连");
             mRecordBtn.setBackgroundResource(R.mipmap.start_live);
             isRecording = false;
         }
 
         @Override
-        public void onNetGood() {
-//            if (mCurrentBps + 50 <= mVideoConfiguration.maxBps){
-//                SopCastLog.d(TAG, "BPS_CHANGE good up 50");
-//                int bps = mCurrentBps + 50;
-//                if(mLFLiveView != null) {
-//                    boolean result = mLFLiveView.setVideoBps(bps);
-//                    if(result) {
-//                        mCurrentBps = bps;
-//                    }
-//                }
-//            } else {
-//                SopCastLog.d(TAG, "BPS_CHANGE good good good");
-//            }
-//            SopCastLog.d(TAG, "Current Bps: " + mCurrentBps);
-        }
-
-        @Override
-        public void onNetBad() {
-//            if (mCurrentBps - 100 >= mVideoConfiguration.minBps){
-//                SopCastLog.d(TAG, "BPS_CHANGE bad down 100");
-//                int bps = mCurrentBps - 100;
-//                if(mLFLiveView != null) {
-//                    boolean result = mLFLiveView.setVideoBps(bps);
-//                    if(result) {
-//                        mCurrentBps = bps;
-//                    }
-//                }
-//            } else {
-//                SopCastLog.d(TAG, "BPS_CHANGE bad down 100");
-//            }
-//            SopCastLog.d(TAG, "Current Bps: " + mCurrentBps);
+        public void onCloseConnectionResult(int result) {
+            //result 0成功  1 失败
+            statusView.setText("关闭推流连接");
+            mRecordBtn.setBackgroundResource(R.mipmap.start_live);
+            isRecording = false;
         }
     };
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        mLFLiveView.pause();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mLFLiveView.resume();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLFLiveView.stop();
-        mLFLiveView.release();
+        mLiveCameraView.destroy();
     }
 
 }

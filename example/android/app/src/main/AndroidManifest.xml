@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.flutter_rtmp_plugin_example">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -8,6 +10,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="flutter_rtmp_plugin_example"
+        tools:replace="android:label"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

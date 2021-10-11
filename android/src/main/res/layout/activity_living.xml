@@ -6,12 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".LivingActivity">
 
-    <com.laifeng.sopcastsdk.ui.CameraLivingView
+    <me.lake.librestreaming.ws.StreamLiveCameraView
         android:id="@+id/liveView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </com.laifeng.sopcastsdk.ui.CameraLivingView>
+        android:layout_height="match_parent"/>
 
     <ImageButton
         android:id="@+id/closeBtn"

@@ -16,7 +16,10 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.autofocus" />
     <application>
-        <activity android:name=".LivingActivity"></activity>
+        <activity
+            android:name=".LivingActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            ></activity>
     </application>
 
 </manifest>
